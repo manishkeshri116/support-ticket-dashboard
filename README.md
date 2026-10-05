@@ -43,29 +43,36 @@ frontend/
 2. Configure and migrate the API:
 
    ```bash
-   cd backend
    npm install
-   cp .env.example .env
+   cp backend/.env.example backend/.env
    ```
 
    Edit `DATABASE_URL` in `backend/.env` to match your PostgreSQL username, password, host, and database.
 
    ```bash
-   npm run db:generate
    npm run db:migrate
    npm run db:seed
-   npm run dev
+   npm run dev:api
    ```
 
 3. In a second terminal, start the frontend:
 
    ```bash
-   cd frontend
-   npm install
    npm run dev
    ```
 
 4. Open the local URL printed by Vite (usually http://localhost:5173). The Vite development server proxies `/api` requests to `http://localhost:5002`.
+
+## Deploy to Vercel
+
+The repository is configured as a single Vercel project: the Vite app is built into `frontend/dist`, and `api/[...path].ts` exposes the Express REST API as a Vercel Node.js Function. Set the Vercel project's **Root Directory** to the repository root (not `frontend` or `backend`), then add `DATABASE_URL` under Project Settings → Environment Variables for the Production environment. Use a hosted PostgreSQL connection string from your database provider. Deploy once, then apply the Prisma migration to that same database:
+
+```bash
+DATABASE_URL='your-production-postgres-url' npm run db:migrate
+DATABASE_URL='your-production-postgres-url' npm run db:seed
+```
+
+The Vercel function does not run migrations or seed data during requests. If `/api/summary` responds with an error, check the Vercel Function logs and confirm `DATABASE_URL` is configured and the database is reachable from Vercel.
 
 ### Environment variables
 
@@ -94,14 +101,12 @@ Errors use `{ "error": { "code": "...", "message": "...", "details": {} } }`; va
 The API tests use a mocked Prisma delegate, so they run without a PostgreSQL service:
 
 ```bash
-cd backend
 npm test
-npm run build
+npm run build --workspace backend
 ```
 
 ```bash
-cd frontend
-npm run build
+npm run build --workspace frontend
 ```
 
 ## Assumptions and limitations
