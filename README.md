@@ -65,7 +65,7 @@ frontend/
 
 ## Deploy to Vercel
 
-The repository is configured as a single Vercel project: the Vite app is built into `frontend/dist`, and `api/[...path].ts` exposes the Express REST API as a Vercel Node.js Function. Set the Vercel project's **Root Directory** to the repository root (not `frontend` or `backend`), then add `DATABASE_URL` under Project Settings → Environment Variables for the Production environment. Use a hosted PostgreSQL connection string from your database provider. Deploy once, then apply the Prisma migration to that same database:
+The repository is configured as a single Vercel project: the Vite app is built into `frontend/dist`, and `api/[...path].ts` exposes the Express REST API as a Vercel Node.js Function. Set the Vercel project's **Root Directory** to the repository root (not `frontend` or `backend`), then add `DATABASE_URL` under Project Settings → Environment Variables for the Production environment. Use a hosted PostgreSQL connection string from your database provider. Prisma CLI and Vite build packages are regular workspace dependencies, so installation and deployment do not depend on dev dependencies being included. Deploy once, then apply the Prisma migration to that same database:
 
 ```bash
 DATABASE_URL='your-production-postgres-url' npm run db:migrate
