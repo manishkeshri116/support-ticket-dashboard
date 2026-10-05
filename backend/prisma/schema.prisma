@@ -1,0 +1,35 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum TicketStatus {
+  OPEN        @map("Open")
+  IN_PROGRESS @map("In Progress")
+  RESOLVED    @map("Resolved")
+}
+
+enum TicketPriority {
+  LOW    @map("Low")
+  MEDIUM @map("Medium")
+  HIGH   @map("High")
+}
+
+model Ticket {
+  id            Int            @id @default(autoincrement())
+  title         String         @db.VarChar(120)
+  description   String         @db.Text
+  customerEmail String         @map("customer_email") @db.VarChar(254)
+  priority      TicketPriority @default(MEDIUM)
+  status        TicketStatus   @default(OPEN)
+  createdAt     DateTime       @default(now()) @map("created_at") @db.Timestamptz(3)
+  updatedAt     DateTime       @updatedAt @map("updated_at") @db.Timestamptz(3)
+
+  @@index([createdAt])
+  @@index([status, priority])
+  @@map("tickets")
+}

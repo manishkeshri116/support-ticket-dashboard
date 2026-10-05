@@ -1,0 +1,12 @@
+# Node
+node_modules/
+**/node_modules/
+backend/dist/
+frontend/dist/
+backend/.env
+*.tsbuildinfo
+
+# Python artifacts from the original prototype
+__pycache__/
+.pytest_cache/
+*.db
