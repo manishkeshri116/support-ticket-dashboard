@@ -1,5 +1,9 @@
+const apiBaseUrl = import.meta.env.DEV
+  ? ""
+  : (import.meta.env.VITE_API_BASE_URL || "https://support-ticket-dashboard-x4je.onrender.com");
+
 export async function api<T>(path: string, options?: RequestInit): Promise<T> {
-  const response = await fetch(path, {
+  const response = await fetch(`${apiBaseUrl}${path}`, {
     ...options,
     headers: { ...(options?.body ? { "Content-Type": "application/json" } : {}), ...options?.headers },
   });

@@ -28,6 +28,16 @@ beforeEach(() => {
 });
 
 describe("ticket API", () => {
+  it("allows the deployed frontend origin through CORS", async () => {
+    const response = await request(app)
+      .get("/api/health")
+      .set("Origin", "https://support-ticket-dashboard-ashen.vercel.app");
+    expect(response.status).toBe(200);
+    expect(response.headers["access-control-allow-origin"]).toBe(
+      "https://support-ticket-dashboard-ashen.vercel.app",
+    );
+  });
+
   it("validates required fields, email, and the 120-character title limit", async () => {
     const invalid = await request(app).post("/api/tickets").send({
       title: "x".repeat(121),

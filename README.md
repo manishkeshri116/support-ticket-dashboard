@@ -63,18 +63,22 @@ frontend/
 
 4. Open the local URL printed by Vite (usually http://localhost:5173). The Vite development server proxies `/api` requests to `http://localhost:5002`.
 
-## Deploy to Vercel
+## Deploy
 
-The repository is configured as a single Vercel project: the Vite app is built into `frontend/dist`, and `api/[...path].ts` exposes the Express REST API as a Vercel Node.js Function. Set the Vercel project's **Root Directory** to the repository root (not `frontend` or `backend`), then add `DATABASE_URL` under Project Settings → Environment Variables for the Production environment. Use a hosted PostgreSQL connection string from your database provider. Prisma Client is a production dependency at the repository root for the serverless API; the Prisma CLI is a production dependency of the backend workspace, and Vercel generates the client explicitly during the build. Deploy once, then apply the Prisma migration to that same database:
+The frontend is hosted on Vercel and the REST API on Render. The frontend defaults to `https://support-ticket-dashboard-x4je.onrender.com` for production API requests; set `VITE_API_BASE_URL` in Vercel if the API host changes. On Render, configure `DATABASE_URL` and set `CORS_ORIGINS` to include the exact Vercel origin, such as `https://support-ticket-dashboard-ashen.vercel.app`.
+
+Run the Prisma migration and seed against the PostgreSQL database configured for Render:
 
 ```bash
 DATABASE_URL='your-production-postgres-url' npm run db:migrate
 DATABASE_URL='your-production-postgres-url' npm run db:seed
 ```
 
-The Vercel function does not run migrations or seed data during requests. If `/api/summary` responds with an error, check the Vercel Function logs and confirm `DATABASE_URL` is configured and the database is reachable from Vercel.
+The optional `api/[...path].ts` Vercel function remains available for a single-provider deployment; in that configuration, set the Vercel Root Directory to the repository root and configure `DATABASE_URL` in Vercel. Migrations and seeding must be run explicitly; they are never run during API requests.
 
-If a Vercel deployment starts from an older commit, compare its **Source** commit with the latest commit on GitHub `main`. Redeploying an old failed deployment repeats that old source; trigger a deployment from the current branch head instead. If Vercel continues selecting an older commit after a new push, reconnect the Git repository in Vercel Project Settings → Git and verify the Production Branch is `main`.
+If `/api/health` succeeds but `/api/tickets` or `/api/summary` returns `500`, the API is running but cannot complete its database query. Check Render logs and verify `DATABASE_URL` points to the migrated PostgreSQL database. If the browser reports a CORS error, verify `CORS_ORIGINS` on Render includes the exact deployed Vercel origin.
+
+When debugging a deployment, compare its **Source** commit with the latest GitHub `main` commit. Redeploying an old failed deployment repeats that source; trigger a deployment from the current branch head instead.
 
 ### Environment variables
 
@@ -82,6 +86,8 @@ If a Vercel deployment starts from an older commit, compare its **Source** commi
 | --- | --- | --- |
 | `DATABASE_URL` | Yes | PostgreSQL connection string, e.g. `postgresql://user:password@localhost:5432/support_tickets?schema=public`. |
 | `PORT` | No | Express API port; defaults to `5002`. |
+| `CORS_ORIGINS` | No | Comma-separated browser origins allowed to call the API. Defaults to local Vite and the deployed Vercel app. |
+| `VITE_API_BASE_URL` | No | Frontend API origin for production builds. Defaults to the configured Render service URL; local Vite development uses its `/api` proxy. |
 
 ## Seed data
 
