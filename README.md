@@ -74,6 +74,8 @@ DATABASE_URL='your-production-postgres-url' npm run db:seed
 
 The Vercel function does not run migrations or seed data during requests. If `/api/summary` responds with an error, check the Vercel Function logs and confirm `DATABASE_URL` is configured and the database is reachable from Vercel.
 
+If a Vercel deployment starts from an older commit, compare its **Source** commit with the latest commit on GitHub `main`. Redeploying an old failed deployment repeats that old source; trigger a deployment from the current branch head instead. If Vercel continues selecting an older commit after a new push, reconnect the Git repository in Vercel Project Settings → Git and verify the Production Branch is `main`.
+
 ### Environment variables
 
 | Variable | Required | Description |
