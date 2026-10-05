@@ -7,18 +7,16 @@
     "frontend"
   ],
   "scripts": {
-    "postinstall": "prisma generate --schema=backend/prisma/schema.prisma",
     "dev": "npm run dev --workspace frontend",
     "dev:api": "npm run dev --workspace backend",
     "build": "npm run build --workspace backend && npm run build --workspace frontend",
-    "build:vercel": "npm run build:vercel --workspace frontend",
+    "build:vercel": "npm run db:generate --workspace backend && npm run build:vercel --workspace frontend",
     "test": "npm test --workspace backend",
     "db:generate": "npm run db:generate --workspace backend",
     "db:migrate": "npm run db:migrate --workspace backend",
     "db:seed": "npm run db:seed --workspace backend"
   },
   "dependencies": {
-    "@prisma/client": "^6.12.0",
-    "prisma": "6.12.0"
+    "@prisma/client": "6.12.0"
   }
 }
